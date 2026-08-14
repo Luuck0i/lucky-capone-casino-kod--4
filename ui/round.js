@@ -29,7 +29,7 @@ return Math.floor(value*100)/100;}
 function tidyAuto(){var value=readAuto();autoEl.value=value>0?value.toFixed(2):"";}
 function lockConsole(locked){stakeEl.disabled=locked;lessEl.disabled=locked;moreEl.disabled=locked;autoEl.disabled=locked;launchEl.disabled=locked;refillEl.disabled=locked;}
 function pushHistory(mult){history.unshift(mult);if(history.length>HISTORY_MAX){history.pop();}
-stripEl.innerHTML="";for(var i=0;i<history.length;i+=1){var li=document.createElement("li");var v=history[i];var tone=v<2?"fx_chip_low":v<10?"fx_chip_mid":"fx_chip_high";li.className="fx_chip-4f6a442f"+tone;li.textContent=fmtMult(v);stripEl.appendChild(li);}}
+stripEl.innerHTML="";for(var i=0;i<history.length;i+=1){var li=document.createElement("li");var v=history[i];var tone=v<2?"fx_chip_low":v<10?"fx_chip_mid":"fx_chip_high";li.className="fx_chip-c7b10b3b"+tone;li.textContent=fmtMult(v);stripEl.appendChild(li);}}
 function fitCanvas(){var host=canvas.parentNode;var w=host&&host.clientWidth?host.clientWidth:640;if(w<220){w=220;}
 var h=Math.round(w*0.44);if(h<190){h=190;}
 if(h>360){h=360;}
@@ -52,7 +52,7 @@ drawFlight(round.tEnd,round.crashAt,p);if(p<1){schedule();}}}
 function startRound(){if(phase!=="idle"){return;}
 clampStake();tidyAuto();var stake=readStake();if(stake<1){say("The stake must be at least 1 credit.","fx_down");return;}
 if(stake>bank){say("Reserve too low for that stake — trim it down.","fx_down");return;}
-bank=round2(bank-stake);saveBank();renderBank();round={stake:stake,autoAt:readAuto(),crashAt:sampleCrash(),t0:window.performance.now(),banked:false,bankedAt:0,tEnd:0};phase="flight";lockConsole(true);collectEl.disabled=false;multEl.classList.remove("fx_mult_gone-4f6a442f");if(round.autoAt>0){say("Airborne. Auto cash-out armed at "+
+bank=round2(bank-stake);saveBank();renderBank();round={stake:stake,autoAt:readAuto(),crashAt:sampleCrash(),t0:window.performance.now(),banked:false,bankedAt:0,tEnd:0};phase="flight";lockConsole(true);collectEl.disabled=false;multEl.classList.remove("fx_mult_gone-c7b10b3b");if(round.autoAt>0){say("Airborne. Auto cash-out armed at "+
 fmtMult(round.autoAt)+".","");}else{say("Airborne. Cash out before the plane departs.","");}
 schedule();}
 function bankWin(mult,auto){var gain=round2(round.stake*mult);round.banked=true;round.bankedAt=mult;bank=round2(bank+gain);saveBank();renderBank();collectEl.disabled=true;say((auto?"Auto cash-out fired at ":"Cashed out at ")+
@@ -60,10 +60,10 @@ fmtMult(mult)+" for "+fmtCash(gain)+". Watching the rest of the flight.","fx_up"
 function cashOut(){if(phase!=="flight"||!round||round.banked){return;}
 var t=(window.performance.now()-round.t0)/1000;var m=multAt(t);if(m>=round.crashAt){return;}
 bankWin(m,false);}
-function blowUp(now){phase="gone";goneAt=now;round.tEnd=(now-round.t0)/1000;multEl.textContent=fmtMult(round.crashAt);multEl.classList.add("fx_mult_gone-4f6a442f");collectEl.disabled=true;pushHistory(round.crashAt);if(round.banked){say("Departed at "+fmtMult(round.crashAt)+" — you had already banked "+
+function blowUp(now){phase="gone";goneAt=now;round.tEnd=(now-round.t0)/1000;multEl.textContent=fmtMult(round.crashAt);multEl.classList.add("fx_mult_gone-c7b10b3b");collectEl.disabled=true;pushHistory(round.crashAt);if(round.banked){say("Departed at "+fmtMult(round.crashAt)+" — you had already banked "+
 fmtCash(round.stake*round.bankedAt)+".","fx_up");}else{say("Flew away at "+fmtMult(round.crashAt)+" and took the stake with it.","fx_down");}
 schedule();window.setTimeout(settleRound,GONE_HOLD_MS);}
-function settleRound(){phase="idle";round=null;lockConsole(false);collectEl.disabled=true;multEl.textContent="1.00×";multEl.classList.remove("fx_mult_gone-4f6a442f");drawIdle();if(bank<1){say("Reserve is empty — press Refill to restock the demo "+"credits.","fx_down");}}
+function settleRound(){phase="idle";round=null;lockConsole(false);collectEl.disabled=true;multEl.textContent="1.00×";multEl.classList.remove("fx_mult_gone-c7b10b3b");drawIdle();if(bank<1){say("Reserve is empty — press Refill to restock the demo "+"credits.","fx_down");}}
 function refill(){if(phase!=="idle"){return;}
 bank=START_BANK;saveBank();renderBank();say("Reserve restocked to "+START_BANK+" demo credits.","");}
 launchEl.addEventListener("click",startRound);collectEl.addEventListener("click",cashOut);refillEl.addEventListener("click",refill);lessEl.addEventListener("click",function(){nudgeStake(-STAKE_STEP);});moreEl.addEventListener("click",function(){nudgeStake(STAKE_STEP);});stakeEl.addEventListener("change",clampStake);autoEl.addEventListener("change",tidyAuto);window.addEventListener("resize",function(){fitCanvas();if(phase==="idle"){drawIdle();}});fitCanvas();drawIdle();renderBank();if(bank<1){say("Reserve is empty — press Refill to restock the demo "+"credits.","");}})();
